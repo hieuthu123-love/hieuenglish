@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Trò chơi học từ vựng</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html,
+        body {
+            background-image: url('hhh.png');
+            background-size: cover;
+            /* Phủ đầy màn hình */
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 20px 10px 40px;
+            overflow-x: hidden;
+            background-size: cover;
+            /* hoặc contain */
+            /* Canh giữa ảnh */
+        }
+        
+        h2 {
+            color: #2e3131;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        textarea {
+            width: 90%;
+            max-width: 600px;
+            height: 120px;
+            font-size: 16px;
+            padding: 12px;
+            border-radius: 16px;
+            border: 2px dashed #ffa502;
+            background: white;
+            margin: 10px auto 20px;
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            border-color: #ff6348;
+            box-shadow: 0 0 10px rgba(255, 99, 72, 0.6);
+        }
+        
+        button {
+            padding: 14px 26px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: scale(1.05) rotate(-1deg);
+        }
+        
+        #speakAgainBtn {
+            background-color: #00cec9;
+            color: white;
+        }
+        
+        #speakAgainBtn:hover {
+            background-color: #00b4a0;
+        }
+        
+        #toggleSoundBtn {
+            background-color: #ffa502;
+            color: white;
+        }
+        
+        #toggleSoundBtn:hover {
+            background-color: #e08900;
+        }
+        
+        .start-btn {
+            background-color: #ff6b81;
+            color: white;
+        }
+        
+        .start-btn:hover {
+            background-color: #ff4757;
+        }
+        
+        .word {
+            font-size: 40px;
+            font-weight: bold;
+            color: #2f3542;
+            margin: 25px 0 10px;
+            text-shadow: 3px 3px 0px White, 0 0 10px rgba(0, 0, 0, 0.15);
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-8px);
+            }
+        }
+        
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+        
+        .card:hover {
+            transform: scale(1.1);
+            background-color: #ffeaa7;
+        }
+        
+        .correct {
+            background-color: #55ef6a !important;
+            animation: blinkGreen 0.5s 2;
+        }
+        
+        .wrong {
+            background-color: #fab1a0 !important;
+            animation: shake 0.3s;
+        }
+        
+        @keyframes blinkGreen {
+            0%,
+            100% {
+                background-color: #55ef6a;
+            }
+            50% {
+                background-color: #55ef6a;
+            }
+        }
+        
+        @keyframes shake {
+            0% {
+                transform: translateX(0px);
+            }
+            25% {
+                transform: translateX(-6px);
+            }
+            50% {
+                transform: translateX(6px);
+            }
+            75% {
+                transform: translateX(-4px);
+            }
+            100% {
+                transform: translateX(0px);
+            }
+        }
+        
+        .result {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .hide {
+            display: none;
+        }
+        
+        #summary {
+            margin-top: 30px;
+        }
+        
+        #reviewList {
+            list-style: none;
+            margin-top: 10px;
+            padding: 0;
+        }
+        
+        #reviewList li {
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        
+        .mode-button-container {
+            margin-top: 20px;
+        }
+        
+        .mode-btn {
+            width: 70px;
+            height: 70px;
+            background-color: rgb(221, 18, 18);
+            color: white;
+            font-size: 24px;
+            border: none;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 0 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mode-btn:hover {
+            transform: scale(1.15);
+            background-color: #ff793f;
+        }
+        
+        #typingContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        #userAnswer {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            width: auto;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
+        }
+        
+        #checkBtnTyping {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        
+        #checkBtnTyping:hover {
+            background-color: #ff4757;
+        }
+        
+        @media (max-width: 600px) {
+            .word {
+                font-size: 30px;
+            }
+            .card {
+                font-size: 16px;
+                padding: 14px;
+            }
+            #typingContainer {
+                flex-direction: column;
+                gap: 12px;
+            }
+            #userAnswer {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Nhập từ vựng (mỗi dòng: từ gốc - nghĩa)</h2>
+    <textarea id="inputWords" placeholder="Ví dụ: apple - quả táo&#10;犬 - con chó"></textarea>
+    <br>
+
+    <div class="mode-button-container">
+        <button class="mode-btn" onclick="setGameMode('multiple')"> Trắc nghiệm</button>
+        <button class="mode-btn" onclick="setGameMode('typing')"> Điền từ</button>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">🎮 Bắt đầu chơi</button>
+
+    <div id="game" class="hide">
+        <div>
+            <div class="word" id="word">Đang tải...</div>
+            <button id="speakAgainBtn" onclick="speakCurrentWord()">🔊 Phát âm lại</button>
+            <button id="toggleSoundBtn" onclick="toggleSound()">🔊 Âm thanh: Bật</button>
+            <button onclick="goBack()" class="start-btn" style="background-color:#6c5ce7;">🔙 Quay lại</button>
+        </div>
+        <div class="choices" id="choices"></div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <div id="summary" class="hide">
+        <h2>Kết quả tổng kết</h2>
+        <p id="scoreText"></p>
+        <ul id="reviewList"></ul>
+    </div>
+
+    <script>
+        let words = [];
+        let currentIndex = 0;
+        let correctCount = 0;
+        let review = [];
+        let currentWord = null;
+        let soundEnabled = true;
+        let gameMode = "multiple";
+        let historyStack = [];
+
+        function setGameMode(mode) {
+            gameMode = mode;
+        }
+
+        function startGame() {
+            const input = document.getElementById("inputWords").value.trim();
+            const lines = input.split("\n");
+            words = [];
+
+            for (let line of lines) {
+                let parts = line.split("-");
+                if (parts.length === 2) {
+                    let en = parts[0].trim();
+                    let vi = parts[1].trim();
+                    if (en && vi) {
+                        const lang = /[ぁ-んァ-ン一-龥]/.test(en) ? 'ja' : 'en';
+                        words.push({
+                            en,
+                            vi,
+                            lang
+                        });
+                    }
+                }
+            }
+
+            if (words.length < 4) {
+                alert("Bạn cần nhập ít nhất 4 từ để chơi!");
+                return;
+            }
+
+            currentIndex = 0;
+            correctCount = 0;
+            review = [];
+            historyStack = [];
+            words = shuffleArray(words);
+
+            document.getElementById("game").classList.remove("hide");
+            document.getElementById("summary").classList.add("hide");
+
+            loadWord();
+        }
+
+        function loadWord() {
+            document.getElementById("result").textContent = "";
+
+            if (currentIndex >= words.length) {
+                showSummary();
+                return;
+            }
+
+            const current = words[currentIndex];
+            if (currentIndex > 0) {
+                historyStack.push(currentIndex - 1);
+            }
+
+            currentWord = current;
+            document.getElementById("word").textContent = current.en;
+            speakWord(current.en, current.lang);
+
+            const container = document.getElementById("choices");
+            container.innerHTML = "";
+
+            if (gameMode === "typing") {
+                // Hiển thị ô nhập và nút kiểm tra đặt sát nhau, thẳng hàng
+                container.innerHTML = `
+                    <div id="typingContainer">
+                        <input type="text" id="userAnswer" placeholder="Nhập nghĩa của từ">
+                        <button id="checkBtnTyping" onclick="checkTypingAnswer()">Kiểm tra</button>
+                    </div>
+                `;
+            } else {
+                const choices = getRandomChoices(current.vi);
+                choices.forEach(choice => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.textContent = choice;
+                    card.onclick = () => {
+                        if (choice === current.vi) {
+                            card.classList.add("correct");
+                            document.getElementById("result").textContent = "✅ Chính xác!";
+                            document.getElementById("result").style.color = "green";
+                            correctCount++;
+                            review.push({...current,
+                                correct: true
+                            });
+                        } else {
+                            card.classList.add("wrong");
+                            document.getElementById("result").textContent = `❌ Sai! Đáp án đúng: ${current.vi}`;
+                            document.getElementById("result").style.color = "red";
+                            review.push({...current,
+                                correct: false
+                            });
+                        }
+                        disableChoices();
+                        setTimeout(() => {
+                            currentIndex++;
+                            loadWord();
+                        }, 1500);
+                    };
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        function checkTypingAnswer() {
+            const userInput = document.getElementById("userAnswer").value.trim().toLowerCase();
+            const correctAnswer = currentWord.vi.toLowerCase();
+
+            if (!userInput) return;
+
+            if (userInput === correctAnswer) {
+                document.getElementById("result").textContent = "✅ Chính xác!";
+                document.getElementById("result").style.color = "green";
+                correctCount++;
+                review.push({...currentWord,
+                    correct: true
+                });
+            } else {
+                document.getElementById("result").textContent = `❌ Sai! Đáp án đúng: ${currentWord.vi}`;
+                document.getElementById("result").style.color = "red";
+                review.push({...currentWord,
+                    correct: false
+                });
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                loadWord();
+            }, 1500);
+        }
+
+        function disableChoices() {
+            document.querySelectorAll(".card").forEach(card => {
+                card.onclick = null;
+            });
+        }
+
+        function getRandomChoices(correct) {
+            let choices = [correct];
+            while (choices.length < 4) {
+                const random = words[Math.floor(Math.random() * words.length)].vi;
+                if (!choices.includes(random)) choices.push(random);
+            }
+            return choices.sort(() => Math.random() - 0.5);
+        }
+
+        function speakWord(text, lang) {
+            if (!soundEnabled) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang === 'ja' ? 'ja-JP' : 'en-US';
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+
+        function speakCurrentWord() {
+            if (currentWord) {
+                speakWord(currentWord.en, currentWord.lang);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById("toggleSoundBtn");
+            btn.textContent = soundEnabled ? "🔊 Âm thanh: Bật" : "🔇 Âm thanh: Tắt";
+        }
+
+        function showSummary() {
+            document.getElementById("game").classList.add("hide");
+            document.getElementById("summary").classList.remove("hide");
+            document.getElementById("scoreText").textContent = `Bạn trả lời đúng ${correctCount} trên ${words.length} câu.`;
+
+            const reviewList = document.getElementById("reviewList");
+            reviewList.innerHTML = "";
+            review.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = `${item.en} - ${item.vi} : ${item.correct ? "Đúng" : "Sai"}`;
+                li.style.color = item.correct ? "green" : "red";
+                reviewList.appendChild(li);
+            });
+        }
+
+        function goBack() {
+            if (historyStack.length > 0) {
+                currentIndex = historyStack.pop();
+                loadWord();
+            } else {
+                document.getElementById("game").classList.add("hide");
+                document.getElementById("summary").classList.add("hide");
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+
+</html>
